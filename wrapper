@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ ! -d /rst ]
+then
+    echo >&2 mount your RST files in /rst
+    exit 1
+fi
+
+failures=0
+for file in $(find /rst -name \*.rst)
+do
+    echo "$file"
+    /opt/github-rest2html/rest2html "$file" > /dev/null
+    failures=$(($returncode+$?))
+done
+
+test $failures -eq 0 || exit 1
