@@ -24,10 +24,10 @@ do
     if $verbose
     then
         /opt/github-rest2html/rest2html "$file"
-        failures=$(($returncode+$?))
+        failures=$(($failures+$?))
     else
         /opt/github-rest2html/rest2html "$file" > /dev/null
-        failures=$(($returncode+$?))
+        failures=$(($failures+$?))
     fi
 done
 
