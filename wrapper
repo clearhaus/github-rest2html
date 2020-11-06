@@ -1,10 +1,19 @@
 #!/bin/sh
 
-rst_file_path="/github/workspace"
+verbose=false
+while getopts "p:v" options
+do
+    case $options in
+        p) file_path=$OPTARG ;;
+        v) verbose=true ;;
+    esac
+done
 
-if [ ! -d "$rst_file_path" ]
+rst_file_path="${file_path=/github/workspace}"
+
+if [ ! -e "$rst_file_path" ]
 then
-    echo >&2 mount your RST files in "$rst_file_path"
+    echo >&2 "Error: ${rst_file_path} does not exist"
     exit 1
 fi
 
@@ -12,8 +21,14 @@ failures=0
 for file in $(find "$rst_file_path" -name \*.rst)
 do
     echo "$file"
-    /opt/github-rest2html/rest2html "$file" > /dev/null
-    failures=$(($returncode+$?))
+    if $verbose
+    then
+        /opt/github-rest2html/rest2html "$file"
+        failures=$(($returncode+$?))
+    else
+        /opt/github-rest2html/rest2html "$file" > /dev/null
+        failures=$(($returncode+$?))
+    fi
 done
 
 test $failures -eq 0 || exit 1
