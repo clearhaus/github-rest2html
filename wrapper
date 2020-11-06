@@ -2,9 +2,9 @@
 
 rst_file_path="/github/workspace"
 
-if [ ! -d "$rst_file_path" ]
+if [ ! -e "$rst_file_path" ]
 then
-    echo >&2 mount your RST files in "$rst_file_path"
+    echo >&2 "Error: ${rst_file_path} does not exist"
     exit 1
 fi
 
