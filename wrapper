@@ -1,13 +1,15 @@
 #!/bin/sh
 
-if [ ! -d /rst ]
+rst_file_path="/github/workspace"
+
+if [ ! -d "$rst_file_path" ]
 then
-    echo >&2 mount your RST files in /rst
+    echo >&2 mount your RST files in "$rst_file_path"
     exit 1
 fi
 
 failures=0
-for file in $(find /rst -name \*.rst)
+for file in $(find "$rst_file_path" -name \*.rst)
 do
     echo "$file"
     /opt/github-rest2html/rest2html "$file" > /dev/null
