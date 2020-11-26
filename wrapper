@@ -1,11 +1,13 @@
 #!/bin/sh
 
 verbose=false
-while getopts "p:v" options
+write=false
+while getopts "p:vw" options
 do
     case $options in
         p) file_path=$OPTARG ;;
         v) verbose=true ;;
+        w) write=true ;;
     esac
 done
 
@@ -15,13 +17,29 @@ if [ ! -e "$rst_file_path" ]
 then
     echo >&2 "Error: ${rst_file_path} does not exist"
     exit 1
+elif [ -f "$rst_file_path" ]
+then
+    cd $(dirname "$rst_file_path")
+    rst_file_path=$(basename "$rst_file_path")
+elif [ -d "$rst_file_path" ]
+then
+    cd "$rst_file_path"
+    rst_file_path='.'
 fi
 
 failures=0
 for file in $(find "$rst_file_path" -name \*.rst)
 do
     echo "$file"
-    if $verbose
+    if [ "$verbose" = 'true' -a "$write" = 'true' ]
+    then
+        /opt/github-rest2html/rest2html "$file" | tee "$file.html"
+        failures=$(($failures+$?))
+    elif [ "$write" = 'true' ]
+    then
+        /opt/github-rest2html/rest2html "$file" > "$file.html"
+        failures=$(($failures+$?))
+    elif [ "$verbose" = 'true' ]
     then
         /opt/github-rest2html/rest2html "$file"
         failures=$(($failures+$?))
